@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clocks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            border: 2px solid #333;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+        }
+        h2 {
+            margin: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    const timeZones = [
+        { city: 'Los Angeles', offset: -7 },
+        { city: 'Chicago', offset: -5 },
+        { city: 'New York', offset: -4 },
+        { city: 'Mexico City', offset: -6 },
+        { city: 'Toronto', offset: -4 },
+        { city: 'Buenos Aires', offset: -3 },
+        { city: 'Rio de Janeiro', offset: -3 },
+        { city: 'Santiago', offset: -3 },
+        { city: 'Lima', offset: -5 },
+        { city: 'London', offset: 1 },
+        { city: 'Berlin', offset: 2 },
+        { city: 'Cairo', offset: 2 },
+        { city: 'Moscow', offset: 3 },
+        { city: 'Nairobi', offset: 3 },
+        { city: 'Dubai', offset: 4 },
+        { city: 'Mumbai', offset: 5.5 },
+        { city: 'Bangkok', offset: 7 },
+        { city: 'Jakarta', offset: 7 },
+        { city: 'Beijing', offset: 8 },
+        { city: 'Manila', offset: 8 },
+        { city: 'Tokyo', offset: 9 },
+        { city: 'Seoul', offset: 9 },
+        { city: 'Sydney', offset: 10 },
+        { city: 'Auckland', offset: 13 },
+        { city: 'Tehran', offset: 3.5 }, // Iran Standard Time
+        { city: 'Kabul', offset: 4.5 },  // Afghanistan Time
+        { city: 'Kathmandu', offset: 5.75 }, // Nepal Time
+        { city: 'Toronto', offset: -4 }
+    ];
+
+    // Add unique UTC offsets without duplicating existing city time zones
+    const uniqueTimeZones = [
+        { city: 'UTC -12', offset: -12 },
+        { city: 'UTC -11', offset: -11 },
+        { city: 'UTC -10', offset: -10 },
+        { city: 'UTC -9', offset: -9 },
+        { city: 'UTC -8', offset: -8 },
+        { city: 'UTC -2', offset: -2 },
+        { city: 'UTC -1', offset: -1 },
+        { city: 'UTC +0', offset: 0 },
+        { city: 'UTC +1', offset: 1 },
+        { city: 'UTC +4', offset: 4 },
+        { city: 'UTC +5', offset: 5 },
+        { city: 'UTC +6', offset: 6 },
+        { city: 'UTC +10', offset: 10 },
+        { city: 'UTC +11', offset: 11 },
+        { city: 'UTC +12', offset: 12 },
+        { city: 'UTC +13', offset: 13 },
+    ];
+
+    // Combine both arrays without duplicating
+    const allTimeZones = [...timeZones];
+    uniqueTimeZones.forEach(zone => {
+        const exists = allTimeZones.find(tz => tz.offset === zone.offset);
+        if (!exists) {
+            allTimeZones.push(zone);
+        }
+    });
+
+    // Sort time zones by offset
+    allTimeZones.sort((a, b) => a.offset - b.offset);
+
+    function drawClock(ctx, offset, time) {
+        const utcHours = time.getUTCHours() + offset;
+        const hours = (utcHours >= 24 ? utcHours - 24 : (utcHours < 0 ? utcHours + 24 : utcHours));
+        const minutes = time.getUTCMinutes();
+        const seconds = time.getUTCSeconds() + time.getMilliseconds() / 1000;
+
+        const isPM = hours >= 12;
+        ctx.canvas.style.backgroundColor = isPM ? '#333' : 'white';
+        ctx.strokeStyle = isPM ? 'white' : '#333';
+
+        ctx.clearRect(0, 0, 120, 120);
+        ctx.beginPath();
+        ctx.arc(60, 60, 50, 0, Math.PI * 2);
+        ctx.stroke();
+
+        const hourAngle = (hours % 12) * 30 + (minutes / 60) * 30 + (seconds / 3600) * 30;
+
+        // Adjust minute angle based on the offset
+        let minuteAngle = minutes * 6 + (seconds / 60) * 6;
+        if (offset % 1 === 0.5) {
+            minuteAngle += 180; // Add 180 degrees if offset has a .5 component
+        } else if (offset % 1 === 0.75) {
+            minuteAngle += 270; // Add 270 degrees for a .75 component
+        }
+
+        const secondAngle = seconds * 6;
+
+        ctx.save();
+        ctx.translate(60, 60);
+        ctx.rotate(hourAngle * Math.PI / 180);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -20);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(60, 60);
+        ctx.rotate(minuteAngle * Math.PI / 180);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -30);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(60, 60);
+        ctx.rotate(secondAngle * Math.PI / 180);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -40);
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function updateClocks() {
+        const now = new Date();
+        for (let i = 0; i < allTimeZones.length; i++) {
+            const canvas = document.getElementById(`clock${i}`);
+            const ctx = canvas.getContext('2d');
+            drawClock(ctx, allTimeZones[i].offset, now);
+        }
+        requestAnimationFrame(updateClocks);
+    }
+
+    window.onload = function() {
+        allTimeZones.forEach((zone, index) => {
+            const container = document.createElement('div');
+            container.className = 'clock-container';
+            const canvas = document.createElement('canvas');
+            canvas.id = `clock${index}`;
+            canvas.width = 120;
+            canvas.height = 120;
+            container.appendChild(canvas);
+            const title = document.createElement('h2');
+            title.innerText = zone.city;
+            container.appendChild(title);
+            document.body.appendChild(container);
+        });
+
+        updateClocks();
+    };
+</script>
+
+</body>
+</html>
