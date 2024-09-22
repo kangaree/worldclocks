@@ -27,6 +27,13 @@
         h2 {
             margin: 10px 0;
             font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+        img {
+            width: 20px;
+            height: 15px;
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -34,48 +41,49 @@
 
 <script>
     const timeZones = [
-        { city: 'Los Angeles', offset: -7 },
-        { city: 'Mexico City', offset: -6 },
-        { city: 'Chicago', offset: -5 },
-        { city: 'New York', offset: -4 },
-        { city: 'Buenos Aires', offset: -3 },
-        { city: 'Santiago', offset: -3 },
-        { city: 'London', offset: 1 },
-        { city: 'Berlin', offset: 2 },
-        { city: 'Cairo', offset: 2 },
-        { city: 'Cape Town', offset: 2 },
-        { city: 'Moscow', offset: 3 },
-        { city: 'Nairobi', offset: 3 },
-        { city: 'Tehran', offset: 3.5 },
-        { city: 'Dubai', offset: 4 },
-        { city: 'Kabul', offset: 4.5 },
-        { city: 'Mumbai', offset: 5.5 },
-        { city: 'Kathmandu', offset: 5.75 },
-        { city: 'Bangkok', offset: 7 },
-        { city: 'Beijing', offset: 8 },
-        { city: 'Singapore', offset: 8 },
-        { city: 'Tokyo', offset: 9 },
-        { city: 'Seoul', offset: 9 },
-        { city: 'Sydney', offset: 10 },
-        { city: 'Auckland', offset: 13 },
-        { city: 'UTC -12', offset: -12 },
-        { city: 'UTC -11', offset: -11 },
-        { city: 'UTC -10', offset: -10 },
-        { city: 'UTC -9', offset: -9 },
-        { city: 'UTC -8', offset: -8 },
-        { city: 'UTC -2', offset: -2 },
-        { city: 'UTC -1', offset: -1 },
-        { city: 'UTC +0', offset: 0 },
-        { city: 'UTC +1', offset: 1 },
-        { city: 'UTC +4', offset: 4 },
-        { city: 'UTC +5', offset: 5 },
-        { city: 'UTC +6', offset: 6 },
-        { city: 'UTC +10', offset: 10 },
-        { city: 'UTC +11', offset: 11 },
-        { city: 'UTC +12', offset: 12 },
-        { city: 'UTC +13', offset: 13 },
+        { city: 'Los Angeles', offset: -7, flag: '🇺🇸' },
+        { city: 'Mexico City', offset: -6, flag: '🇲🇽' },
+        { city: 'Chicago', offset: -5, flag: '🇺🇸' },
+        { city: 'New York', offset: -4, flag: '🇺🇸' },
+        { city: 'Buenos Aires', offset: -3, flag: '🇦🇷' },
+        { city: 'Santiago', offset: -3, flag: '🇨🇱' },
+        { city: 'London', offset: 1, flag: '🇬🇧' },
+        { city: 'Berlin', offset: 2, flag: '🇩🇪' },
+        { city: 'Cairo', offset: 2, flag: '🇪🇬' },
+        { city: 'Cape Town', offset: 2, flag: '🇿🇦' },
+        { city: 'Moscow', offset: 3, flag: '🇷🇺' },
+        { city: 'Nairobi', offset: 3, flag: '🇰🇪' },
+        { city: 'Tehran', offset: 3.5, flag: '🇮🇷' },
+        { city: 'Dubai', offset: 4, flag: '🇦🇪' },
+        { city: 'Kabul', offset: 4.5, flag: '🇦🇫' },
+        { city: 'Mumbai', offset: 5.5, flag: '🇮🇳' },
+        { city: 'Kathmandu', offset: 5.75, flag: '🇳🇵' },
+        { city: 'Bangkok', offset: 7, flag: '🇹🇭' },
+        { city: 'Beijing', offset: 8, flag: '🇨🇳' },
+        { city: 'Singapore', offset: 8, flag: '🇸🇬' },
+        { city: 'Tokyo', offset: 9, flag: '🇯🇵' },
+        { city: 'Seoul', offset: 9, flag: '🇰🇷' },
+        { city: 'Sydney', offset: 10, flag: '🇦🇺' },
+        { city: 'Auckland', offset: 13, flag: '🇳🇿' },
+        { city: 'UTC -12', offset: -12, flag: '🌐' },
+        { city: 'UTC -11', offset: -11, flag: '🌐' },
+        { city: 'UTC -10', offset: -10, flag: '🌐' },
+        { city: 'UTC -9', offset: -9, flag: '🌐' },
+        { city: 'UTC -8', offset: -8, flag: '🌐' },
+        { city: 'UTC -2', offset: -2, flag: '🌐' },
+        { city: 'UTC -1', offset: -1, flag: '🌐' },
+        { city: 'UTC +0', offset: 0, flag: '🌐' },
+        { city: 'UTC +1', offset: 1, flag: '🌐' },
+        { city: 'UTC +4', offset: 4, flag: '🌐' },
+        { city: 'UTC +5', offset: 5, flag: '🌐' },
+        { city: 'UTC +6', offset: 6, flag: '🌐' },
+        { city: 'UTC +10', offset: 10, flag: '🌐' },
+        { city: 'UTC +11', offset: 11, flag: '🌐' },
+        { city: 'UTC +12', offset: 12, flag: '🌐' },
+        { city: 'UTC +13', offset: 13, flag: '🌐' },
     ];
 
+    // Sort time zones by offset
     timeZones.sort((a, b) => a.offset - b.offset);
 
     function drawClock(ctx, offset, time) {
@@ -154,7 +162,7 @@
             canvas.height = 120;
             container.appendChild(canvas);
             const title = document.createElement('h2');
-            title.innerText = zone.city;
+            title.innerHTML = `${zone.flag} ${zone.city}`; // Add flag next to city name
             container.appendChild(title);
             document.body.appendChild(container);
         });
