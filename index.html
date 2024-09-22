@@ -35,37 +35,29 @@
 <script>
     const timeZones = [
         { city: 'Los Angeles', offset: -7 },
+        { city: 'Mexico City', offset: -6 },
         { city: 'Chicago', offset: -5 },
         { city: 'New York', offset: -4 },
-        { city: 'Mexico City', offset: -6 },
-        { city: 'Toronto', offset: -4 },
         { city: 'Buenos Aires', offset: -3 },
-        { city: 'Rio de Janeiro', offset: -3 },
         { city: 'Santiago', offset: -3 },
-        { city: 'Lima', offset: -5 },
         { city: 'London', offset: 1 },
         { city: 'Berlin', offset: 2 },
         { city: 'Cairo', offset: 2 },
+        { city: 'Cape Town', offset: 2 },
         { city: 'Moscow', offset: 3 },
         { city: 'Nairobi', offset: 3 },
+        { city: 'Tehran', offset: 3.5 },
         { city: 'Dubai', offset: 4 },
+        { city: 'Kabul', offset: 4.5 },
         { city: 'Mumbai', offset: 5.5 },
+        { city: 'Kathmandu', offset: 5.75 },
         { city: 'Bangkok', offset: 7 },
-        { city: 'Jakarta', offset: 7 },
         { city: 'Beijing', offset: 8 },
-        { city: 'Manila', offset: 8 },
+        { city: 'Singapore', offset: 8 },
         { city: 'Tokyo', offset: 9 },
         { city: 'Seoul', offset: 9 },
         { city: 'Sydney', offset: 10 },
         { city: 'Auckland', offset: 13 },
-        { city: 'Tehran', offset: 3.5 }, // Iran Standard Time
-        { city: 'Kabul', offset: 4.5 },  // Afghanistan Time
-        { city: 'Kathmandu', offset: 5.75 }, // Nepal Time
-        { city: 'Toronto', offset: -4 }
-    ];
-
-    // Add unique UTC offsets without duplicating existing city time zones
-    const uniqueTimeZones = [
         { city: 'UTC -12', offset: -12 },
         { city: 'UTC -11', offset: -11 },
         { city: 'UTC -10', offset: -10 },
@@ -84,17 +76,7 @@
         { city: 'UTC +13', offset: 13 },
     ];
 
-    // Combine both arrays without duplicating
-    const allTimeZones = [...timeZones];
-    uniqueTimeZones.forEach(zone => {
-        const exists = allTimeZones.find(tz => tz.offset === zone.offset);
-        if (!exists) {
-            allTimeZones.push(zone);
-        }
-    });
-
-    // Sort time zones by offset
-    allTimeZones.sort((a, b) => a.offset - b.offset);
+    timeZones.sort((a, b) => a.offset - b.offset);
 
     function drawClock(ctx, offset, time) {
         const utcHours = time.getUTCHours() + offset;
@@ -154,16 +136,16 @@
 
     function updateClocks() {
         const now = new Date();
-        for (let i = 0; i < allTimeZones.length; i++) {
+        for (let i = 0; i < timeZones.length; i++) {
             const canvas = document.getElementById(`clock${i}`);
             const ctx = canvas.getContext('2d');
-            drawClock(ctx, allTimeZones[i].offset, now);
+            drawClock(ctx, timeZones[i].offset, now);
         }
         requestAnimationFrame(updateClocks);
     }
 
     window.onload = function() {
-        allTimeZones.forEach((zone, index) => {
+        timeZones.forEach((zone, index) => {
             const container = document.createElement('div');
             container.className = 'clock-container';
             const canvas = document.createElement('canvas');
